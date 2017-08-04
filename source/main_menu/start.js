@@ -36,6 +36,6 @@ function build_main_menu_scene(){
   views.game.scene.add( hemiLight );
   //control_object_loader.load_all();
   onWindowResize();
-  setTimeout(start_the_demo,500);
-  setTimeout(start_the_demo2,1000);
+  setTimeout(start_the_demo,1000);
+  setTimeout(start_the_demo2,2500);
 }
