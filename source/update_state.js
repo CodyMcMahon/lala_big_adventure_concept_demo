@@ -169,10 +169,10 @@ function update_state(){
         }
       }
       if(ship.position.x > 0 && y_camera_rot > views.game.camera.rotation.y){
-        views.game.camera.rotation.y = y_camera_rot;
+        //views.game.camera.rotation.y = y_camera_rot;
       }
       else if(ship.position.x < 0 && y_camera_rot < views.game.camera.rotation.y){
-        views.game.camera.rotation.y = y_camera_rot;
+        //views.game.camera.rotation.y = y_camera_rot;
       }
       views.game.camera.rotation.x = x_camera_rot;
 
@@ -398,6 +398,22 @@ function update_state(){
       //}
       //views.game.camera.position.x = ship.position.x/2;
       views.game.camera.position.y = ship.position.y/2;
+      if(rail.position.x > 1600){
+        rail.position.x = 1500;
+        rail.rotation.y = Math.PI/2;
+      }
+      if(rail.position.x < -1600){
+        rail.position.x = -1500;
+        rail.rotation.y = -Math.PI/2;
+      }
+      if(rail.position.z > 1600){
+        rail.position.z = 1500;
+        rail.rotation.y = 0;
+      }
+      if(rail.position.z < -1600){
+        rail.position.z = -1500;
+        rail.rotation.y = Math.PI;
+      }
   }
 
   if(dev_mode){
