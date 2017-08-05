@@ -317,7 +317,7 @@ function update_state(){
           }
         }
         */
-      }
+      //}
       //views.game.camera.position.x = ship.position.x/2;
       views.game.camera.position.y = ship.position.y/2;
   }
