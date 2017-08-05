@@ -89,11 +89,11 @@ function update_state(){
         joy_stick.x -= (Math.pow(1.04,(abs_x - (x_ratio * .25)))-1) * joy_stick.x;
         joy_stick.y -= (Math.pow(1.04,(abs_y - (y_ratio * .25)))-1) * joy_stick.y;
         if(ship.position.x > 0){
-          ship.position.x = Math.min(ship.position.x - x_move,50);
+          ship.position.x = Math.min(ship.position.x - x_move,30);
 
         }
         else{
-          ship.position.x = Math.max(ship.position.x - x_move,-50);
+          ship.position.x = Math.max(ship.position.x - x_move,-30);
 
         }
         if(ship.position.y > 0){
@@ -211,7 +211,19 @@ function update_state(){
       pulse.position.z += pulse_direction.z*2 - .5;
 
       //bat.position.x -= .25;
-      rail.position.z-=.5;
+      /*******************************************
+       *   rail here                              *
+       *******************************************/
+      //rail.position.z-=.5;
+
+      if(ship.position.x < -15){
+        rail.rotation.y -= (ship.position + 15) * .1;
+      }
+      if(ship.position.x > 15){
+        rail.rotation.y += (ship.position - 15) * .1;
+      }
+     	rail.position.z -= rail_speed * Math.sin(-rail.rotation.y  + Math.PI/2);
+     	rail.position.x += rail_speed * Math.sin(-rail.rotation.y);
 
       reticule.rotation.x = views.game.camera.rotation.x;
       reticule.rotation.y = views.game.camera.rotation.y;
@@ -269,6 +281,7 @@ function update_state(){
           }
         }
       }
+      /*
       if(pulse.position.z - rail.position.z <= -400){
         pulse_direction = {x:0,y:0,z:0};
         pulse_animation = true;
@@ -303,6 +316,7 @@ function update_state(){
             pulse.scale.set(pulse.scale.x+1,pulse.scale.x+1,pulse.scale.x+1);
           }
         }
+        */
       }
       //views.game.camera.position.x = ship.position.x/2;
       views.game.camera.position.y = ship.position.y/2;
