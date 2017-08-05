@@ -111,7 +111,7 @@ function update_state(){
 
       //target_reticule.x = (target_reticule.x-ship.position.x*3-joy_stick.x*40)/2;
       //target_reticule.y = -(target_reticule.y-ship.position.y*3-joy_stick.y*40)/2;
-      reticule.position.x = (reticule.position.x+ship.position.x*2.3-joy_stick.x*180)/2;
+      reticule.position.x = (reticule.position.x+ship.position.x*7.3-joy_stick.x*180)/2;
       reticule.position.y = (reticule.position.y+ship.position.y*2.3+joy_stick.y*180)/2;
 
       var z_delta = ship.position.z - reticule.position.z;
@@ -119,6 +119,11 @@ function update_state(){
       var x_delta = ship.position.x - reticule.position.x;
       var rot_vector = new THREE.Vector3(x_delta,y_delta,z_delta);
       rot_vector.normalize();
+      //var laser_x_delta = ship.position.x - reticule.position.x;
+      //var laser_y_delta = ship.position.y - reticule.position.y;
+      //var laser_z_delta = ship.position.z - reticule.position.z;
+      //var laser_vector = new THREE.Vector3(x_delta,y_delta,z_delta);
+      //laser_vector.normalize();
       reticule_mini.position.x = reticule.position.x + rot_vector.x*170;
       reticule_mini.position.y = reticule.position.y + rot_vector.y*170;
       reticule_mini.position.z = reticule.position.z + rot_vector.z*170;
@@ -155,7 +160,7 @@ function update_state(){
       var y_camera_rot = Math.atan(x_delta_cam/z_delta_cam)/2;
       if(y_camera_rot > 0){
         if(y_camera_rot > Math.PI/12){
-          y_camera_rot = Math.PI/12;
+            y_camera_rot = Math.PI/12;
         }
       }
       else{
@@ -163,30 +168,53 @@ function update_state(){
           y_camera_rot = -Math.PI/12;
         }
       }
-
+      if(ship.position.x > 0 && y_camera_rot > views.game.camera.rotation.y){
+        views.game.camera.rotation.y = y_camera_rot;
+      }
+      else if(ship.position.x < 0 && y_camera_rot < views.game.camera.rotation.y){
+        views.game.camera.rotation.y = y_camera_rot;
+      }
       views.game.camera.rotation.x = x_camera_rot;
-      views.game.camera.rotation.y = y_camera_rot;
 
       if(laser_fire){
         var ve = new THREE.Vector3();
+        var ret_pos = new THREE.Vector3();
         ve.setFromMatrixPosition( ship.matrixWorld );
+        ret_pos.setFromMatrixPosition( reticule.matrixWorld );
         views.game.scene.updateMatrixWorld();
         laser[laser_current].position.x = ve.x;
         laser[laser_current].position.y = ve.y;
         laser[laser_current].position.z = ve.z;
-        laser[laser_current].rotation.x = ship.rotation.x;
-        laser[laser_current].rotation.y = ship.rotation.y;
-        laser[laser_current].rotation.z = ship.rotation.z;
-        laser_direction[laser_current].x = -rot_vector.x;
-        laser_direction[laser_current].y = -rot_vector.y;
-        laser_direction[laser_current].z = -rot_vector.z;
+        laser[laser_current].rotation.x = ship.rotation.x + rail.rotation.x;
+        laser[laser_current].rotation.y = ship.rotation.y + rail.rotation.y;
+        laser[laser_current].rotation.z = ship.rotation.z + rail.rotation.z;
+        laser_direction[laser_current].x = ve.x - ret_pos.x;
+        laser_direction[laser_current].y = ve.y - ret_pos.y;
+        laser_direction[laser_current].z = ve.z - ret_pos.z;
+        ve = new THREE.Vector3(laser_direction[laser_current].x,laser_direction[laser_current].y,laser_direction[laser_current].z);
+        ve.normalize();
+        laser_direction[laser_current].x = (-ve.x)*25 + rail_speed * Math.sin(-rail.rotation.y);
+        laser_direction[laser_current].y = (-ve.y)*25;
+        laser_direction[laser_current].z = (-ve.z)*25 - rail_speed * Math.sin(-rail.rotation.y  + Math.PI/2);
+        laser[laser_current].rest = false;
+        laser[laser_current].count = 0;
         laser_fire = false;
         laser_current = (laser_current+1)%25;
       }
       for(var i = 0; i < 25;i++){
-        laser[i].position.x += laser_direction[i].x*25;
-        laser[i].position.y += laser_direction[i].y*25;
-        laser[i].position.z += laser_direction[i].z*25 - .5;
+        if(laser[i].rest){
+          continue;
+        }
+        laser[i].position.x += laser_direction[i].x;
+        laser[i].position.y += laser_direction[i].y;
+        laser[i].position.z += laser_direction[i].z;
+        if(laser[i].count > 90){
+          laser[i].rest = true;
+          laser[i].position.y = -1000;
+        }
+        else{
+          laser[i].count += 1;
+        }
       }
 
 
@@ -206,9 +234,9 @@ function update_state(){
         pulse_fire = false;
       }
 
-      pulse.position.x += pulse_direction.x*2;
-      pulse.position.y += pulse_direction.y*2;
-      pulse.position.z += pulse_direction.z*2 - .5;
+      //pulse.position.x += pulse_direction.x*2;
+      //pulse.position.y += pulse_direction.y*2;
+      //pulse.position.z += pulse_direction.z*2 - .5;
 
       //bat.position.x -= .25;
       /*******************************************
@@ -217,10 +245,10 @@ function update_state(){
       //rail.position.z-=.5;
 
       if(ship.position.x < -15){
-        rail.rotation.y -= (ship.position + 15) * .1;
+        rail.rotation.y -= (ship.position.x + 15) * .001;
       }
       if(ship.position.x > 15){
-        rail.rotation.y += (ship.position - 15) * .1;
+        rail.rotation.y -= (ship.position.x - 15) * .001;
       }
      	rail.position.z -= rail_speed * Math.sin(-rail.rotation.y  + Math.PI/2);
      	rail.position.x += rail_speed * Math.sin(-rail.rotation.y);
@@ -275,9 +303,36 @@ function update_state(){
       }
       for(var i = 0; i < 25; i++){
         for(var o = 0; o < 10; o++){
-          var distance = Math.sqrt((laser[i].position.x - bat[o].position.x) * (laser[i].position.x - bat[o].position.x) + (laser[i].position.y - bat[o].position.y) * (laser[i].position.y - bat[o].position.y) + (laser[i].position.z - bat[o].position.z) * (laser[i].position.z - bat[o].position.z));
-          if(distance < 13){
-            bat[o].position.z = 100;
+          if(bat[o].alive){
+            var distance = Math.sqrt((laser[i].position.x - bat[o].position.x) * (laser[i].position.x - bat[o].position.x) + (laser[i].position.y - bat[o].position.y) * (laser[i].position.y - bat[o].position.y) + (laser[i].position.z - bat[o].position.z) * (laser[i].position.z - bat[o].position.z));
+            if(distance < 17){
+              bat[o].rotation.x = rail.rotation.x;
+              bat[o].rotation.y = rail.rotation.y;
+              bat[o].rotation.z = rail.rotation.z;
+              bat[o].alive = false;
+              bat[o].remove(bat[o].wings);
+              bat[o].remove(bat[o].body);
+              bat[o].add(bat[o].explode);
+              bat[o].scale.set(.1,.1,.1);
+            }
+          }
+          else{
+            if(bat[o].dead_count < 60){
+              bat[o].scale.set(bat[o].scale.x+.1,bat[o].scale.y+.1,bat[o].scale.z+.1);
+            }
+            else if(bat[o].dead_count < 120){
+              bat[o].scale.set(bat[o].scale.x-.1,bat[o].scale.y-.1,bat[o].scale.z-.1);
+            }
+            else{
+              bat[o].scale.set(1,1,1);
+              bat[o].dead_count = 0;
+              bat[o].alive = true;
+              bat[o].rotation.x = 0;
+              bat[o].rotation.z = 0;
+              bat[o].add(bat[o].wings);
+              bat[o].add(bat[o].body);
+              bat[o].remove(bat[o].explode);
+            }
           }
         }
       }

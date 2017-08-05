@@ -21,6 +21,8 @@ var locked_mouse = false;
 var GAME_SENSITIVITY = .4;
 var MOUSE_LEASH = 10;
 
+var rail_speed = 1;
+
 var rotation_state = 0;
 var rail;
 var reticule;

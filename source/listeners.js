@@ -72,11 +72,14 @@ function onDocumentMouseUp(event){
 }
 function onDocumentKeyDown(event){
 	//fire
-	if(event.which ===	67){
+	/*if(event.which ===	67){
 		pulse_fire = true;
 		pulse_animation = false;
 		pulse_animation_down = false;
 		pulse.scale.set(1,1,1);
+	}*/
+	if(event.which === 32){
+		rail_speed = 7;
 	}
 	if(event.which === 79){
 		for(var i = 0;i < 10;i++){
@@ -97,5 +100,9 @@ function onDocumentKeyDown(event){
   me.keyboard[event.which] = true;
 }
 function onDocumentKeyUp(event){
+
+	if(event.which === 32){
+		rail_speed = 1;
+	}
   me.keyboard[event.which] = false;
 }

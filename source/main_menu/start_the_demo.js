@@ -24,31 +24,25 @@ function start_the_demo(){
   dev.ld('die','ship');
   dev.ld('engine','engine');
   dev.ld('wings','wings');
-  dev.ld('buildings','b1');
+  //dev.ld('buildings','b1');
   //dev.ld('laser_gun','laser_gun');
   for(var i = 0;i < 10;i++){
     dev.ld('die','bat' + i);
-    if(i%2){
-      //dev.ld('bat_wings','bat_wings' + i);
-      dev.ld('enemy_nut','bat_body' + i);
-    }
-    else{
-      dev.ld('bat_wings','bat_wings' + i);
-      dev.ld('bat_body','bat_body' + i);
-
-    }
+    dev.ld('bat_wings','bat_wings' + i);
+    dev.ld('bat_body','bat_body' + i);
+    dev.ld('pulse','explode' + i);
   }
   for(var i = 0;i < 25;i++){
     dev.ld('laser','laser'+i);
   }
-  dev.ld('pulse','pulse');
+  //dev.ld('pulse','pulse');
   //dev.ld('pulse_gun','pulse_gun');
   dev.ld('rocket_gun','rocket_gun');
 }
 function start_the_demo2(){
-  views.game.object_dict['b1'].mesh.position.z-=700;
-  views.game.object_dict['b1'].mesh.position.x-=5;
-  views.game.object_dict['b1'].mesh.position.y-=45;
+  //views.game.object_dict['b1'].mesh.position.z-=700;
+  //views.game.object_dict['b1'].mesh.position.x-=5;
+  //views.game.object_dict['b1'].mesh.position.y-=45;
   //views.game.object_dict['ship'].mesh.scale.set(.0005,.0005,.0005);
   ship = views.game.object_dict['ship'].mesh;
   ship.add(views.game.object_dict['engine'].mesh);
@@ -61,33 +55,30 @@ function start_the_demo2(){
   //ship.rotation.order = "XYZ";
   for(var i = 0;i < 10;i++){
     bat[i] = views.game.object_dict['bat'+i].mesh;
-    //bat[i].add(views.game.object_dict['bat_wings'+i].mesh);
+    bat[i].body = views.game.object_dict['bat_body'+i].mesh;
+    bat[i].wings = views.game.object_dict['bat_wings'+i].mesh;
+    bat[i].explode = views.game.object_dict['explode'+i].mesh;
     bat[i].add(views.game.object_dict['bat_body'+i].mesh);
-    if(!(i%2)){
-      bat[i].add(views.game.object_dict['bat_wings'+i].mesh);
-    }
+    bat[i].add(views.game.object_dict['bat_wings'+i].mesh);
+    bat[i].alive = true;
+    bat[i].dead_count = 0;
+    views.game.scene.remove(bat[i].explode);
+    bat[i].explode.scale.set(10,10,10);
   }
   for(var i = 0;i < 10;i++){
-    bat[i].position.z = -650;
+    bat[i].position.y = Math.random() * 80 - 30;
+    bat[i].position.x = Math.random() * 3000 - 1500;
+    bat[i].position.z = Math.random() * 3000 - 1500;
+    bat[i].rotation.y = Math.random() * Math.PI * 2;
   }
-  bat[0].position.x = -40;
-  bat[1].position.x = -40;
-  bat[2].position.x = -40;
-  bat[6].position.x = 40;
-  bat[7].position.x = 40;
-  bat[8].position.x = 40;
-  bat[0].position.y = 30;
-  bat[3].position.y = 30;
-  bat[6].position.y = 30;
-  bat[2].position.y = -30;
-  bat[5].position.y = -30;
-  bat[8].position.y = -30;
-  //bat.rotation.y = Math.PI;88
+
   for(var i = 0;i < 25;i++){
     laser[i] = views.game.object_dict['laser'+i].mesh;
     laser[i].scale.set(5,5,5);
+    laser[i].rest = true;
+    laser[i].count = 0;
   }
-  pulse = views.game.object_dict['pulse'].mesh;
+  //pulse = views.game.object_dict['pulse'].mesh;
   var ve = new THREE.Vector3();
   ve.setFromMatrixPosition( ship.matrixWorld );
   //laser.position.x = ve.x;
@@ -95,11 +86,11 @@ function start_the_demo2(){
   //laser.position.z = ve.z;
   for(var i = 0;i < 25;i++){
     views.game.scene.add(laser[i]);
-    laser[i].position.y = 100;
+    laser[i].position.y = -100;
   }
-  pulse.position.x = ve.x;
-  pulse.position.y = ve.y;
-  pulse.position.z = 100;
+  //pulse.position.x = ve.x;
+  //pulse.position.y = -999;
+  //pulse.position.z = 100;
   views.game.scene.add(pulse);
   ship.position.y =-7;
   ship.position.z =-10;
