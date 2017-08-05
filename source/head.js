@@ -22,6 +22,8 @@ var GAME_SENSITIVITY = .4;
 var MOUSE_LEASH = 10;
 
 var rail_speed = 1;
+var kill_number = 0;
+var kill_number_html;
 
 var rotation_state = 0;
 var rail;

@@ -58,6 +58,8 @@ function start_the_demo2(){
     bat[i].body = views.game.object_dict['bat_body'+i].mesh;
     bat[i].wings = views.game.object_dict['bat_wings'+i].mesh;
     bat[i].explode = views.game.object_dict['explode'+i].mesh;
+    bat[i].body.rotation.y = Math.PI;
+    bat[i].wings.rotation.y = Math.PI;
     bat[i].add(views.game.object_dict['bat_body'+i].mesh);
     bat[i].add(views.game.object_dict['bat_wings'+i].mesh);
     bat[i].alive = true;

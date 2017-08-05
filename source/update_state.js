@@ -306,6 +306,8 @@ function update_state(){
           if(bat[o].alive){
             var distance = Math.sqrt((laser[i].position.x - bat[o].position.x) * (laser[i].position.x - bat[o].position.x) + (laser[i].position.y - bat[o].position.y) * (laser[i].position.y - bat[o].position.y) + (laser[i].position.z - bat[o].position.z) * (laser[i].position.z - bat[o].position.z));
             if(distance < 17){
+              kill_number+=1;
+              kill_number_html.innerHTML = "" + kill_number;
               bat[o].rotation.x = rail.rotation.x;
               bat[o].rotation.y = rail.rotation.y;
               bat[o].rotation.z = rail.rotation.z;
@@ -314,25 +316,46 @@ function update_state(){
               bat[o].remove(bat[o].body);
               bat[o].add(bat[o].explode);
               bat[o].scale.set(.1,.1,.1);
+              bat[o].dead_count = 0;
             }
           }
+        }
+      }
+      for(var o =0; o < 10; o++){
+        if(!bat[o].alive){
+          bat[o].dead_count += 1;
+          if(bat[o].dead_count < 60){
+            bat[o].scale.set(bat[o].scale.x+.1,bat[o].scale.y+.1,bat[o].scale.z+.1);
+          }
+          else if(bat[o].dead_count < 120){
+            bat[o].scale.set(bat[o].scale.x-.1,bat[o].scale.y-.1,bat[o].scale.z-.1);
+          }
           else{
-            if(bat[o].dead_count < 60){
-              bat[o].scale.set(bat[o].scale.x+.1,bat[o].scale.y+.1,bat[o].scale.z+.1);
+            bat[o].scale.set(1,1,1);
+            bat[o].alive = true;
+            bat[o].rotation.x = 0;
+            bat[o].rotation.z = 0;
+            bat[o].add(bat[o].wings);
+            bat[o].add(bat[o].body);
+            bat[o].remove(bat[o].explode);
+            bat[o].position.y = Math.random() * 80 - 30;
+            bat[o].position.x = Math.random() * 1500 - 750;
+            bat[o].position.z = Math.random() * 1500 - 750;
+            bat[o].rotation.y = Math.random() * Math.PI * 2;
+          }
+        }
+        else{
+          if(Math.floor(Math.random()*200)===0){
+            bat[o].rotation.y += Math.random()*Math.PI*3;
+          }
+          else{
+            if(bat[o].position.x > 1500 || bat[o].position.x < -1500 || bat[o].position.z > 1500 || bat[o].position.z < -1500){
+              bat[o].position.x = 0;
+              bat[o].position.z = 0;
             }
-            else if(bat[o].dead_count < 120){
-              bat[o].scale.set(bat[o].scale.x-.1,bat[o].scale.y-.1,bat[o].scale.z-.1);
-            }
-            else{
-              bat[o].scale.set(1,1,1);
-              bat[o].dead_count = 0;
-              bat[o].alive = true;
-              bat[o].rotation.x = 0;
-              bat[o].rotation.z = 0;
-              bat[o].add(bat[o].wings);
-              bat[o].add(bat[o].body);
-              bat[o].remove(bat[o].explode);
-            }
+         	  bat[o].position.z -= 2 * Math.sin(-bat[o].rotation.y  + Math.PI/2);
+         	  bat[o].position.x += 2 * Math.sin(-bat[o].rotation.y);
+
           }
         }
       }

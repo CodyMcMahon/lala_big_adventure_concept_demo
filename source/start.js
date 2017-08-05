@@ -20,6 +20,7 @@ function state_updater(){
   setTimeout(state_updater,1000/GAME_STATE_FRAMES_PER_SECOND);
 }
 function start_up(){
+  kill_number_html = document.getElementById("killnumber");
   init();
   window.addEventListener( 'resize', onWindowResize, false );
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
